@@ -1,0 +1,35 @@
+@primary: #FF903F;
+@secondary: #ffc691;
+@danger: #8c360e;
+
+@pri-txt: #333;
+@nor-txt: #666;
+@sec-txt: #999;
+
+@border: #DDD;
+@divider: #EEE;
+@background: #F5F5F5;
+
+@size-base: 30px;
+@size-lg: @size-base * 1.25;
+@size-sm: @size-base * .875;
+
+/* 可用于普通 flex 布局，不过容器需再加内边距 */ 
+.nor-flex {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 垂直居中 flex 布局，也可垂直排布元素的布局 */ 
+.ver-flex {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+page {
+  background: @background;
+}
