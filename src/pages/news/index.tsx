@@ -18,7 +18,7 @@ export default () => {
 
   /** 加载特定页数据 */
 
-  const loadPage = (pageId: number) => {
+  const loadPage = () => {
     setLoading(true);
     cloud.callFunction({
       name: "newsList",
@@ -41,17 +41,14 @@ export default () => {
   };
 
   usePageEvent("onLoad", () => {
-    loadPage(pageId);
+    loadPage();
   });
   usePageEvent("onReachBottom", () => {
     // 往后翻页时间错乱，是社团联网站本身的失误
     setPageId(pageId + 1);
-    loadPage(pageId);
+    loadPage();
   });
   // React 取到了设置后的 newsList 而 Native 却没有
-  React.useEffect(() => {
-    console.log("React", newsList);
-  }, [newsList]);
   return (
     <View className={styles.news}>
       {newsList.map((e, i) => (
