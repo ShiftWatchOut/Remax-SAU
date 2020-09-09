@@ -30,7 +30,7 @@ const data = [
   {
     name: "状态",
     icon: "circle",
-    url: "../activity/index",
+    url: "../status/index",
   },
   {
     name: "关于",

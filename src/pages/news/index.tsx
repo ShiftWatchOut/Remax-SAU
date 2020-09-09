@@ -64,7 +64,6 @@ export default () => {
         query: { newsid: newsId },
       },
       success: (res: { result: NewsContent[] }) => {
-        console.log(res);
         setNewsDetail(res.result);
         setNewsContentLoading(false);
       },
@@ -119,30 +118,25 @@ export default () => {
         position="bottom"
         closeable
       >
-        <View
-          style={{
-            height: "1000rpx",
-            padding: "80rpx 24rpx",
-            overflow: "scroll",
-            fontSize: "28rpx",
-          }}
-        >
-          <View style={{ fontSize: "44rpx" }}>{newsTitle}</View>
-          <View style={{ color: "gray", fontSize: "24rpx", marginBottom: '30rpx' }}>{newsTime}</View>
+        <View className={styles.popup}>
+          <View className={styles.news_title}>{newsTitle}</View>
+          <View className={styles.news_time}>{newsTime}</View>
           {newsContentLoading && (
             <View className={styles.loading}>
               <Loading type="anna" color="#FF903F" />
             </View>
           )}
           {/* newsDetail 在页面中初始为 null 而非 [] */}
-          {newsDetail &&
-            newsDetail.map((e, i) => {
-              return e.tag == "img" ? (
-                <Image src={e.text} key={i} />
-              ) : (
-                <View key={i}>{e.text} </View>
-              );
-            })}
+          <View className={styles.news_detail}>
+            {newsDetail &&
+              newsDetail.map((e, i) => {
+                return e.tag == "img" ? (
+                  <Image src={e.text} key={i} />
+                ) : (
+                  <View key={i}>{e.text} </View>
+                );
+              })}
+          </View>
         </View>
       </Popup>
       <Popup

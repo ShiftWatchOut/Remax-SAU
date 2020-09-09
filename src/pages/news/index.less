@@ -5,8 +5,29 @@
   padding: 24px 24px 0;
 }
 
-.loading {
-  .nor-flex;
-  height: 10vh;
-  justify-content: center;
+.popup {
+  height: 140vw;
+  padding: 80rpx 24rpx 24rpx;
+  font-size: 28rpx;
+  display: flex;
+  flex-direction: column;
+  .news_title {
+    font-size: 44rpx;
+    color: @pri-txt;
+  }
+  .news_time {
+    font-size: 24rpx;
+    color: @sec-txt;
+    margin-bottom: 30rpx;
+  }
+  .news_detail {
+    overflow-y: scroll;
+    height: 85%;
+    flex: 1;
+    color: @nor-txt;
+  }
+}
+
+.no_data {
+  padding: 40rpx;
 }
