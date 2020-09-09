@@ -5,6 +5,7 @@ import { Filter, Card, Loading, Tag, SearchBar } from "anna-remax-ui";
 import styles from "./index.less";
 
 import DropButton from "@/components/DropButton";
+import api from "@/utils/api";
 
 interface Club {
   club_name: string;
@@ -13,6 +14,13 @@ interface Club {
   club_info: string; // 社团信息文档下载
   expand: boolean; // 简略信息展开
   organization_name: string; // 挂靠单位不确定了，只因这里也有个 organization_id 就用它了
+}
+
+interface Result {
+  data: {
+    rows: Club[],
+    total: number,
+  };
 }
 
 // SAU 官网社团传值 学术性质：ct、社团类别：ci、社团名称：cn、翻页：pi
@@ -102,22 +110,36 @@ export default () => {
     });
   };
 
+  const getClub = async () => {
+    const res = await api.getClub({
+      pi: pageid,
+      ct: academic,
+      ci: category,
+      cn: searchName,
+    });
+    setTotal((res as Result).data.total);
+    setClubList((res as Result).data.rows);
+  };
+
   useEffect(() => {
     // 加载下页，加载时不应管 搜索名、类型
     if (clubList.length < total) {
-      loadClub();
+      // loadClub();
+      getClub()
     }
   }, [pageid]);
   useEffect(() => {
     setClubList([]);
     setPageid(1);
+    getClub()
   }, [searchName, academic, category]);
   useEffect(() => {
     console.log(clubList);
   }, [clubList]);
 
-  usePageEvent("onLoad", () => {
-    loadClub();
+  usePageEvent("onLoad",  () => {
+    getClub()
+    // loadClub();
   });
   usePageEvent("onReachBottom", () => {
     setPageid(pageid + 1);
