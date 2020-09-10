@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, cloud } from "remax/wechat";
+import { View } from "remax/wechat";
 import { usePageEvent } from "remax/macro";
-import { Filter, Card, Loading, Tag, SearchBar } from "anna-remax-ui";
+import { Filter, Card, Loading, SearchBar } from "anna-remax-ui";
 import styles from "./index.less";
 
 import DropButton from "@/components/DropButton";
@@ -18,8 +18,8 @@ interface Club {
 
 interface Result {
   data: {
-    rows: Club[],
-    total: number,
+    rows: Club[];
+    total: number;
   };
 }
 
@@ -85,32 +85,14 @@ export default () => {
   const [pageid, setPageid] = useState(1);
   const [total, setTotal] = useState(0); // 与分页有关
   const [clubList, setClubList] = useState<Club[]>([]);
+
   const [loading, setLoading] = useState(false);
+
   const [searchName, setSearchName] = useState("");
   const [inputTxt, setInputTxt] = useState("");
 
-  const loadClub = () => {
+  const getClub = async (load?: "more") => {
     setLoading(true);
-    const param = {
-      pi: pageid,
-      ct: academic,
-      ci: category,
-      cn: searchName,
-    };
-    cloud.callFunction({
-      name: "search",
-      data: {
-        query: param,
-      },
-      success: (res: { result: { total: number; rows: Club[] } }) => {
-        setLoading(false);
-        setTotal(res.result.total);
-        setClubList(clubList.concat(res.result.rows));
-      },
-    });
-  };
-
-  const getClub = async () => {
     const res = await api.getClub({
       pi: pageid,
       ct: academic,
@@ -118,28 +100,32 @@ export default () => {
       cn: searchName,
     });
     setTotal((res as Result).data.total);
-    setClubList((res as Result).data.rows);
+    if (load) {
+      setClubList(clubList.concat((res as Result).data.rows));
+    } else {
+      setClubList((res as Result).data.rows);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
     // 加载下页，加载时不应管 搜索名、类型
     if (clubList.length < total) {
-      // loadClub();
-      getClub()
+      getClub("more");
     }
   }, [pageid]);
   useEffect(() => {
     setClubList([]);
     setPageid(1);
-    getClub()
+    // 这里在修改 pi 之后强行进行一次请求，未免在第一页时修改下面三项，而 pi 并无差异，无法发起请求
+    getClub();
   }, [searchName, academic, category]);
   useEffect(() => {
     console.log(clubList);
   }, [clubList]);
 
-  usePageEvent("onLoad",  () => {
-    getClub()
-    // loadClub();
+  usePageEvent("onLoad", () => {
+    getClub();
   });
   usePageEvent("onReachBottom", () => {
     setPageid(pageid + 1);

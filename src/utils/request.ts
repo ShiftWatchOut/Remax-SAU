@@ -8,10 +8,14 @@ interface Option {
     data: Object | null;
 }
 
+interface Task {
+    [path: string]: any;
+}
+
 export default class Request {
     count: number;
     taskList: string[];
-    task: Object;
+    task: Task;
     constructor() {
         this.count = 0;
         this.task = {};
