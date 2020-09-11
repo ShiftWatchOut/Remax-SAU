@@ -1,9 +1,11 @@
-import * as React from "react";
-import { View, cloud, Image, Text } from "remax/wechat";
+import React, { useState, useEffect } from "react";
+import { View, Image } from "remax/wechat";
 import { usePageEvent } from "remax/macro";
 import { useNativeEffect } from "remax";
 import styles from "./index.less";
 import { Loading, Card, Popup } from "anna-remax-ui";
+
+import api from "@/utils/api";
 
 interface NewsLi {
   id: string;
@@ -16,59 +18,47 @@ interface NewsContent {
   text: string;
 }
 
+interface ContentResult {
+  data: NewsContent[];
+}
+
+interface ListResult {
+  data: NewsLi[];
+}
+
 export default () => {
   // 新闻列表
-  const [loading, setLoading] = React.useState(true);
-  const [newsList, setNewsList] = React.useState<NewsLi[]>([]);
-  const [pageId, setPageId] = React.useState(1);
-  const [noData, setNoData] = React.useState(false);
+  const [loading, setLoading] = useState(true);
+  const [newsList, setNewsList] = useState<NewsLi[]>([]);
+  const [pageId, setPageId] = useState(1);
+  const [noData, setNoData] = useState(false);
   // 新闻内容
-  const [newsContentShow, setNewsContentShow] = React.useState(false);
-  const [newsContentLoading, setNewsContentLoading] = React.useState(false);
-  const [newsId, setNewsId] = React.useState("");
-  const [newsDetail, setNewsDetail] = React.useState<NewsContent[]>([]);
-  const [newsTitle, setNewsTitle] = React.useState("");
-  const [newsTime, setNewsTime] = React.useState("");
+  const [newsContentShow, setNewsContentShow] = useState(false);
+  const [newsContentLoading, setNewsContentLoading] = useState(false);
+  const [newsId, setNewsId] = useState("");
+  const [newsDetail, setNewsDetail] = useState<NewsContent[]>([]);
+  const [newsTitle, setNewsTitle] = useState("");
+  const [newsTime, setNewsTime] = useState("");
 
   /** 加载特定页数据 */
 
-  const loadPage = () => {
+  const getNewsList = async () => {
     setLoading(true);
-    cloud.callFunction({
-      name: "newsList",
-      data: {
-        query: { pageid: pageId },
-      },
-      success: (res: { result: NewsLi[] }) => {
-        if (newsList.some((e) => e.id === res.result[0].id)) {
-          // 照理来说这个 popup 平时不该弹出来
-          setNoData(true);
-          setLoading(false);
-          return;
-        }
-        if (res.result.length !== 0) {
-          setLoading(false);
-        }
-        setNewsList(newsList.concat(res.result));
-      },
-    });
+    const res = await api.getNewsList({ page: pageId });
+    setNewsList(newsList.concat((res as ListResult).data));
+    setLoading(false);
   };
 
   /** 加载指定id新闻内容 */
 
-  const loadNewsContent = () => {
+  const getNewsDetail = async () => {
+    setNewsDetail([]);
     setNewsContentLoading(true);
-    cloud.callFunction({
-      name: "newsContents",
-      data: {
-        query: { newsid: newsId },
-      },
-      success: (res: { result: NewsContent[] }) => {
-        setNewsDetail(res.result);
-        setNewsContentLoading(false);
-      },
-    });
+    const res = await api.getNewsDetail({ newsid: newsId });
+    setNewsDetail((res as ContentResult).data);
+    setNewsContentLoading(false);
   };
+
   /** 设置新闻 id 标题 时间 */
   const renderNews = (news: NewsLi) => {
     setNewsId(news.id);
@@ -77,20 +67,22 @@ export default () => {
   };
 
   usePageEvent("onLoad", () => {
-    loadPage();
+    getNewsList();
   });
   usePageEvent("onReachBottom", () => {
-    // 往后翻页时间错乱，是社团联网站本身的失误
+    if (loading) return;
+    // 往后翻页 时间 错乱，是社团联网站本身的失误
     setPageId(pageId + 1);
-    loadPage();
   });
   // React 取到了设置后的 newsList 而 Native 却没有
 
-  useNativeEffect(() => {
-    setNewsDetail([]);
-    loadNewsContent();
+  useEffect(() => {
+    if (!newsId) return;
+    getNewsDetail();
   }, [newsId]);
-
+  useEffect(() => {
+    getNewsList();
+  }, [pageId]);
   return (
     <View className={styles.news}>
       {newsList.map((e, i) => (

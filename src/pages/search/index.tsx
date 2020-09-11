@@ -120,9 +120,6 @@ export default () => {
     // 这里在修改 pi 之后强行进行一次请求，未免在第一页时修改下面三项，而 pi 并无差异，无法发起请求
     getClub();
   }, [searchName, academic, category]);
-  useEffect(() => {
-    console.log(clubList);
-  }, [clubList]);
 
   usePageEvent("onLoad", () => {
     getClub();

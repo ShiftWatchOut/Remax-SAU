@@ -12,10 +12,24 @@ interface Task {
     [path: string]: any;
 }
 
+interface MyObject {
+    [key: string]: string;
+}
+
+const qs = (data: MyObject) => {
+    let search = '?';
+    for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+            search += (search.includes('=') ? '&' : '') + key + '=' + data[key];
+        }
+    }
+    return search;
+};
+
 export default class Request {
-    count: number;
-    taskList: string[];
-    task: Task;
+    private count: number;
+    private taskList: string[];
+    private task: Task;
     constructor() {
         this.count = 0;
         this.task = {};
@@ -31,7 +45,16 @@ export default class Request {
             data: data
         })
     }
-    get(path: string, data: any) { }
+    get(path: string, data: any) {
+        this.checkTaskList(path);
+        this.count++;
+        return this.promiseRequest({
+            method: 'GET',
+            url: config.baseUrl+path+qs(data),
+            path: path,
+            data: null,
+        })
+    }
     private promiseRequest(requestOption: Option) {
         const { method, url, path, data } = requestOption;
         return new Promise((resolve, reject) => {
