@@ -23,4 +23,8 @@ export default class API {
     static getStatus(param: any) {
         return request.post('/searchStatue', param);
     }
+    // 获取社团申请详情
+    static getClubDetail(param: any) {
+        return request.get('/clubDetail', param);
+    }
 }
