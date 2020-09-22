@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, CSSProperties } from "react";
 import { View } from "remax/wechat";
 import { usePageEvent } from "remax/macro";
 import { Loading, SearchBar, Card } from "anna-remax-ui";
@@ -32,6 +32,21 @@ export default () => {
 
   const [clubId, setClubId] = useState("");
 
+  const normalStyle: CSSProperties = {
+    width: "80%",
+    height: "unset",
+    transition: "all ease 0.5s",
+    marginLeft: "auto",
+    marginRight: "auto",
+  };
+
+  // 卡片展开样式
+  const expandStyle: CSSProperties = {
+    width: "auto",
+    height: "15vh",
+    transition: "all ease 0.5s",
+  };
+
   const getStatusList = async (load?: "more") => {
     setLoading(true);
     const res = await api.getStatus({
@@ -48,7 +63,7 @@ export default () => {
   };
 
   useEffect(() => {
-    getStatusList('more');
+    getStatusList("more");
   }, [pageId]);
 
   usePageEvent("onLoad", () => {
@@ -61,7 +76,7 @@ export default () => {
   return (
     <View className={styles.status}>
       {statusList.map((e, i) => (
-        <Card key={i} title={e.name} />
+        <Card shadow key={i} title={e.name} />
       ))}
       {loading && (
         <View className={styles.loading}>

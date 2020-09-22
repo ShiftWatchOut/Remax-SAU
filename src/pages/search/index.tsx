@@ -151,7 +151,7 @@ export default () => {
         />
       </Filter>
       {clubList.map((e, i) => (
-        <Card key={i} title={e.club_name} />
+        <Card shadow key={i} title={e.club_name} />
       ))}
       {loading && (
         <View className={styles.loading}>
