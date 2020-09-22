@@ -1,5 +1,4 @@
 import config from "./config";
-import { request } from "remax/wechat";
 
 interface Option {
     method: 'GET' | 'POST';
@@ -50,7 +49,7 @@ export default class Request {
         this.count++;
         return this.promiseRequest({
             method: 'GET',
-            url: config.baseUrl+path+qs(data),
+            url: config.baseUrl + path + qs(data),
             path: path,
             data: null,
         })
@@ -58,7 +57,7 @@ export default class Request {
     private promiseRequest(requestOption: Option) {
         const { method, url, path, data } = requestOption;
         return new Promise((resolve, reject) => {
-            this.task[path] = request({
+            this.task[path] = wx.request({
                 url: url,
                 method: method,
                 data: data,
